@@ -121,6 +121,7 @@ files:
   - vm
   releases:
   - tumbleweed
+  - 16.0
 
 - name: meta-data
   generator: cloud-init
@@ -195,6 +196,23 @@ files:
   - vm
   variants:
   - desktop-kde
+  releases:
+  - 15.6
+
+- path: /etc/sddm.conf.d/autologin.conf
+  generator: dump
+  content: |-
+    [Autologin]
+    User=opensuse
+    Session=plasmawayland
+    Relogin=true
+  types:
+  - vm
+  variants:
+  - desktop-kde
+  releases:
+  - tumbleweed
+  - 16.0
 
 - path: /home/opensuse/.config/kscreenlockerrc
   generator: dump
@@ -249,6 +267,7 @@ packages:
     action: install
     releases:
     - tumbleweed
+    - 16.0
 
   - packages:
     - libdevmapper1_03
@@ -263,6 +282,13 @@ packages:
     - aarch64
     - x86_64
     - i686
+
+  - packages:
+    - net-tools
+    releases:
+    - tumbleweed
+    - 16.0
+    action: install
 
   - packages:
     - cloud-init
