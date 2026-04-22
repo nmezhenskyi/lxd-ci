@@ -156,21 +156,24 @@ lxc exec v1-physical -- "sync"
 lxc stop v1-physical -f
 
 # Get the MAC address of the host NIC before starting instance.
-parentNICMAC=$(cat /sys/class/net/"${parentNIC}v3"/address)
-
+parentNICMAC=$(cat /sys/class/net/"${parentNIC}v4"/address || echo fail)
+ip link set "${parentNIC}" vf 4 mac "${parentNICMAC}"
 lxc config set v1-physical agent.nic_config=true
-lxc config device add v1-physical eth1 nictype=physical parent="${parentNIC}v3" name=eth1
+lxc config device add v1-physical eth1 nic nictype=physical parent="${parentNIC}v4" name=eth1
 lxc start v1-physical
 
 # Wait for lxd-agent to rename the interface.
 waitInstanceBooted v1-physical
 
 # Interface "eth1" should exist in the VM with the correct name and MAC address.
-lxc exec v1-physical -- test -d /sys/class/net/eth1
 [ "$(lxc exec v1-physical -- cat /sys/class/net/eth1/address)" = "${parentNICMAC}" ]
 
 # Remove "eth1" as it is no longer needed.
 lxc config device remove v1-physical eth1
+lxc stop -f v1-physical
+lxc config set v1-physical agent.nic_config=false
+lxc start v1-physical
+waitInstanceBooted v1-physical
 
 # Hot unplug the NICs and check they are removed
 lxc config device remove v1-physical eth0
