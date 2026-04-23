@@ -1970,8 +1970,15 @@ ovn_acl_tests() {
     lxc stop -f c1
     lxc config device set c1 eth0 security.acls=lxdbr0-ping
 
-    echo "==> Don't expect any more OVN port groups to be created yet (just network port group)"
-    [ "$(ovn-nbctl --bare --column=name --format=csv find port_group | grep -c ^lxd_)" = "1" ]
+    if ! echo "${LXD_SNAP_CHANNEL}" | grep -qE "^5\."; then
+        # Starting with LXD 6 the ACL port groups are created at assignment time, not start time.
+        echo "==> Expect 3 LXD related port group to exist before the device is started (network port group, ACL port group, and per-ACL-per-network port group)"
+        [ "$(ovn-nbctl --bare --column=name --format=csv find port_group | grep -c ^lxd_)" = "3" ]
+    else
+        # Test 5.0 and 5.21 behavior.
+        echo "==> Don't expect any more OVN port groups to be created yet (just network port group)"
+        [ "$(ovn-nbctl --bare --column=name --format=csv find port_group | grep -c ^lxd_)" = "1" ]
+    fi
 
     lxc start c1
 
