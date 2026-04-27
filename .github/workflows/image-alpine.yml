@@ -2,20 +2,14 @@ name: Alpine
 
 on:
   schedule:
-    - cron: '30 0 * * 1-5'  # Build amd64
-    - cron: '45 0 * * 1-5'  # Build arm64
+    - cron: '30 0 * * 1-5'
   workflow_dispatch:
-    inputs:
-      build-arm64:
-        type: boolean
-        default: false
-        description: Build arm64 images
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ inputs.build-arm64 }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   # XXX: scheduled runs should not cancel manually triggered ones
   cancel-in-progress: ${{ !contains(github.event_name, 'schedule')}}
 
@@ -35,7 +29,8 @@ jobs:
           - default
           - cloud
         architecture:
-          - ${{ (inputs.build-arm64 == true || github.event.schedule == '45 0 * * 1-5') && 'arm64' || 'amd64' }}
+          - amd64
+          - arm64
     env:
       type: "container"
       distro: "${{ github.job }}"
