@@ -270,6 +270,32 @@ files:
   variants:
   - desktop-kde
 
+- path: /etc/xdg/kdeglobals
+  generator: dump
+  content: |-
+    [KDE]
+    DefaultConfirmLogout=false
+  types:
+  - vm
+  variants:
+  - desktop-kde
+
+- path: /etc/xdg/powermanagementprofilesrc
+  generator: dump
+  content: |-
+    [AC][HandleButtonEvents]
+    powerButtonAction=8
+
+    [Battery][HandleButtonEvents]
+    powerButtonAction=8
+
+    [LowBattery][HandleButtonEvents]
+    powerButtonAction=8
+  types:
+  - vm
+  variants:
+  - desktop-kde
+
 - path: /etc/sudoers.d/90-lxd
   generator: dump
   mode: 0440
@@ -413,11 +439,6 @@ actions:
     sed -ri "s#(DISPLAYMANAGER_AUTOLOGIN)=.*#\1=${USERNAME}#" /etc/sysconfig/displaymanager
 
     systemctl enable sddm || true
-
-    # When calling `lxc stop` KDE will show a dialog for 30 seconds which defaults to logging out.
-    # This decreases the timeout to 10 seconds, and performs a shutdown per default.
-    config_file=/usr/share/plasma/look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml
-    sed -i 's/return root.haltRequested/return root.tempHaltRequested/g;s/return root.logoutRequest/return root.haltRequest/g;s/return root.tempHaltRequested/return root.logoutRequested/g;s/Logging out/TEMP/g;s/Shutting down/Logging out/g;s/TEMP/Shutting down/g;s/case ShutdownType.ShutdownTypeHalt/case ShutdownType.ShutdownTypeLogout/g;s/timeout: 30/timeout: 10/g' "${config_file}"
   types:
   - vm
   variants:
