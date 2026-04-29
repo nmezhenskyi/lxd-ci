@@ -306,7 +306,6 @@ packages:
     - rsync
     - sudo
     - terminfo
-    - systemd-sysvinit
     - tar
     - which
     action: install
