@@ -167,9 +167,6 @@ files:
     ClientIdentifier=mac
   types:
   - vm
-  variants:
-  - default
-  - desktop
 
 - name: meta-data
   generator: cloud-init
