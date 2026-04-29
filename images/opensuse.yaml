@@ -167,8 +167,6 @@ files:
     ClientIdentifier=mac
   types:
   - vm
-  releases:
-  - 16.0
   variants:
   - default
   - desktop
