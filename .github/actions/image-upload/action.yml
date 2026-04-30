@@ -59,7 +59,6 @@ runs:
         # First upload contents to the temporary dir and once fully uploaded
         # move the directory to the final destination to avoid potential race
         # where simplestream-maintainer includes partially uploaded images.
-        JITTER="$((RANDOM % 10))"
 
         SFTP_BATCHFILE="$(mktemp)"
         cat << EOF > "${SFTP_BATCHFILE}"
@@ -68,18 +67,6 @@ runs:
         bye
         EOF
 
-        SUCCESS="false"
-        for attempt in 1 2 3 4 5; do
-          if sftp -oHostKeyAlgorithms=ssh-ed25519 -P "${SSH_PORT}" -oConnectionAttempts=5 -oConnectTimeout=5 -b "${SFTP_BATCHFILE}" "${SSH_USER}@${SSH_HOST}"; then
-            SUCCESS="true"
-            break
-          fi
-
-          DELAY="$((JITTER + attempt * 5))"
-          [ "${attempt}" -gt 1 ] && echo "Attempt ${attempt}/5 failed, waiting ${DELAY}s before retrying..."
-        done
+        sftp -oHostKeyAlgorithms=ssh-ed25519 -P "${SSH_PORT}" -oConnectionAttempts=5 -oConnectTimeout=5 -b "${SFTP_BATCHFILE}" "${SSH_USER}@${SSH_HOST}"
 
         rm -f "${SFTP_BATCHFILE}"
-
-        # Fail the job if the upload did not succeed.
-        [ "${SUCCESS}" = "true" ]
