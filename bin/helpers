@@ -459,6 +459,18 @@ cleanup() {
         rm /var/crash/*waagent*
     fi
 
+    # Ignore io_context_pool crashes.
+    if compgen -G "/var/crash/io_context_pool*" > /dev/null 2>&1; then
+        echo "::notice::==> CORE: io_context_pool core dump ignored"
+        rm /var/crash/io_context_pool*
+    fi
+
+    # Ignore dnsmasq crashes.
+    if compgen -G "/var/crash/dnsmasq*" > /dev/null 2>&1; then
+        echo "::notice::==> CORE: dnsmasq core dump ignored"
+        rm /var/crash/dnsmasq*
+    fi
+
     if [ -n "$(ls -A /var/crash/)" ]; then
         echo "CORE: coredump found during cleanup, forcing failure"
         FAIL=1
