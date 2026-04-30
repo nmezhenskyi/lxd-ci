@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         release:
-          - 15.6        # EOL: 2025-12-31
+          - "16.0"      # EOL: 2027-10-31
           - tumbleweed  # EOL: never
         variant:
           - default
@@ -32,7 +32,6 @@ jobs:
           - arm64
         exclude:
           - {architecture: arm64, variant: desktop-kde}
-          - {release: 15.6, variant: cloud}
     env:
       type: "container"
       distro: "${{ github.job }}"
