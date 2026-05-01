@@ -287,6 +287,10 @@ install_lxd() (
             snap remove --purge lxd || true
         fi
 
+        if [[ "${LXD_SNAP_CHANNEL}" =~ ^(latest|6)/edge$ ]]; then
+            snap refresh core26 --channel latest/edge || snap install core26 --channel latest/edge
+        fi
+
         # Installing a locally provided snap requires to first install from the
         # snapstore then install with --dangerous. The alias needs to be created
         # manually too.
